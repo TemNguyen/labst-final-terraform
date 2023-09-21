@@ -1,0 +1,5 @@
+FROM phpmyadmin/phpmyadmin
+
+ENV PMA_HOST=database1.coto5zodnlv4.ap-southeast-1.rds.amazonaws.com
+
+ENV PMA_PORT=3306
