@@ -1,5 +1,9 @@
+################
+# TARGET GROUPS #
+################
+
 resource "aws_lb_target_group" "tf_tg_80" {
-  name = "tf-tg-80"
+  name = "tf_tg_80"
   port = 80
   protocol = "HTTP"
   target_type = "instance"
@@ -7,25 +11,33 @@ resource "aws_lb_target_group" "tf_tg_80" {
 }
 
 resource "aws_lb_target_group" "tf_tg_8080" {
-  name = "tf-tg-8080"
+  name = "tf_tg_8080"
   port = 8080
   protocol = "HTTP"
   target_type = "instance"
   vpc_id = aws_vpc.lab_st_thinhnguyen_tf_vpc.id
 }
 
+#############################
+# APPLICATION LOAD BALANCER #
+#############################
+
 resource "aws_alb" "tf_alb" {
-  name = "tf-alb"
+  name = "tf_alb"
   internal = false
   load_balancer_type = "application"
   security_groups = [aws_security_group.tf_alb_sg.id]
   subnets = [for subnet in aws_subnet.tf_pub_subnet : subnet.id]
 }
 
-resource "aws_lb_listener" "listener_80" {
+##############
+# LISTERNERS #
+##############
+
+resource "aws_lb_listener" "listener_443" {
   load_balancer_arn = aws_alb.tf_alb.arn
-  port = "80"
-  protocol = "HTTP"
+  port = "443"
+  protocol = "HTTPS"
 
   default_action {
     type = "forward"
@@ -42,4 +54,13 @@ resource "aws_lb_listener" "listener_81" {
     type = "forward"
     target_group_arn = aws_lb_target_group.tf_tg_80.arn
   }
+}
+
+###############
+# CERTIFICATE #
+###############
+
+resource "aws_lb_listener_certificate" "ssl_cert" {
+  listener_arn = aws_lb_listener.listener_443.arn
+  certificate_arn = data.aws_acm_certificate.ssl.arn
 }

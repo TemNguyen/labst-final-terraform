@@ -15,7 +15,7 @@ resource "aws_route" "route_to_nat" {
 }
 
 resource "aws_instance" "tf_nat_bastion" {
-  ami = var.nat-ami
+  ami = var.nat_ami
   instance_type = "t3.small"
   key_name = data.aws_key_pair.ssh_keypair.key_name
   user_data = "${file("nat-user-data.sh")}"

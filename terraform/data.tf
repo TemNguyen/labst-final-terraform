@@ -19,3 +19,13 @@ data "aws_iam_role" "ecs_instance_role" {
 data "aws_iam_role" "ecs_task_execution_role" {
   name = "ecsTaskExecutionRole"
 }
+
+data "aws_acm_certificate" "ssl" {
+  domain = "ecs.lab-st-thinhnguyen.online"
+  statuses = ["ISSUED"]
+}
+
+data "aws_route53_zone" "route53" {
+  name = "lab-st-thinhnguyen.online."
+  private_zone = false
+}

@@ -2,6 +2,10 @@ resource "aws_ecs_cluster" "tf_ecs_cluster" {
   name = "tf_ecs_cluster"
 }
 
+################
+# ECS INSTANCE #
+################
+
 resource "aws_network_interface" "tf_ecs_ec2_eni" {
   subnet_id = aws_subnet.tf_pri_subnet[0].id
   security_groups = [aws_security_group.tf_ecs_sg.id]
@@ -12,7 +16,7 @@ resource "aws_network_interface" "tf_ecs_ec2_eni" {
 }
 
 resource "aws_instance" "tf_ecs_ec2" {
-  ami = var.ecs-ami
+  ami = var.ecs_ami
   instance_type = "t3.medium"
   key_name = data.aws_key_pair.ssh_keypair.key_name
   user_data = <<EOF
@@ -31,6 +35,10 @@ resource "aws_instance" "tf_ecs_ec2" {
     Name = "tf_ecs_ec2"
   }
 }
+
+####################
+# TASK DEFINITIONS #
+####################
 
 resource "aws_ecs_task_definition" "tf_phpmyadmin" {
   family = "tf-phpmyadmin"
@@ -51,7 +59,7 @@ resource "aws_ecs_task_definition" "tf_phpmyadmin" {
   [
     {
       "name": "phpmyadmin",
-      "image": "${var.phpmyadmin-image}",
+      "image": "${var.phpmyadmin_image}",
       "essential": true,
       "portMappings": [
         {
@@ -93,7 +101,7 @@ resource "aws_ecs_task_definition" "tf_wordpress" {
   [
     {
       "name": "wordpress",
-      "image": "${var.wordpress-image}",
+      "image": "${var.wordpress_image}",
       "essential": true,
       "portMappings": [
         {
@@ -131,6 +139,10 @@ resource "aws_ecs_task_definition" "tf_wordpress" {
   ]
   DEFINITION
 }
+
+################
+# ECS SERVICES #
+################
 
 resource "aws_ecs_service" "phpmyadmin" {
   name = "phpmyadmin"

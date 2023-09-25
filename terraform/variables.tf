@@ -25,18 +25,18 @@ variable "amz2023_ami" {
   default = "ami-0db1894e055420bc0"
 }
 
-variable "nat-ami" {
+variable "nat_ami" {
   default = "ami-0df7a207adb9748c7"
 }
 
-variable "ecs-ami" {
+variable "ecs_ami" {
   default = "ami-003c37e0e7439d3ab"
 }
 
-variable "phpmyadmin-image" {
+variable "phpmyadmin_image" {
   default = "public.ecr.aws/docker/library/phpmyadmin:latest"
 }
 
-variable "wordpress-image" {
+variable "wordpress_image" {
   default = "public.ecr.aws/bitnami/wordpress:latest"
 }
