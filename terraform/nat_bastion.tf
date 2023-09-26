@@ -15,10 +15,10 @@ resource "aws_route" "route_to_nat" {
 }
 
 resource "aws_instance" "tf_nat_bastion" {
-  ami = var.nat_ami
+  ami = var.amz2023_ami
   instance_type = "t3.small"
   key_name = data.aws_key_pair.ssh_keypair.key_name
-  user_data = "${file("nat-user-data.sh")}"
+  user_data = "${file("amz2023_nat.sh")}"
 
   network_interface {
     network_interface_id = aws_network_interface.tf_nat_bastion_eni.id

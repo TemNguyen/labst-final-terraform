@@ -21,11 +21,31 @@ data "aws_iam_role" "ecs_task_execution_role" {
 }
 
 data "aws_acm_certificate" "ssl" {
-  domain = "ecs.lab-st-thinhnguyen.online"
+  domain = "final.lab-st-thinhnguyen.online"
   statuses = ["ISSUED"]
 }
 
 data "aws_route53_zone" "route53" {
   name = "lab-st-thinhnguyen.online."
   private_zone = false
+}
+
+data "aws_ami" "ecs_instance" {
+  most_recent = true
+  owners = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-ecs*"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
 }

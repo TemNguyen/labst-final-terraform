@@ -25,7 +25,7 @@ variable "amz2023_ami" {
   default = "ami-0db1894e055420bc0"
 }
 
-variable "nat_ami" {
+variable "ubuntu_ami" {
   default = "ami-0df7a207adb9748c7"
 }
 

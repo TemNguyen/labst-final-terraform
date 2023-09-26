@@ -3,7 +3,7 @@
 ################
 
 resource "aws_lb_target_group" "tf_tg_80" {
-  name = "tf_tg_80"
+  name = "tf-tg-80"
   port = 80
   protocol = "HTTP"
   target_type = "instance"
@@ -11,7 +11,7 @@ resource "aws_lb_target_group" "tf_tg_80" {
 }
 
 resource "aws_lb_target_group" "tf_tg_8080" {
-  name = "tf_tg_8080"
+  name = "tf-tg-8080"
   port = 8080
   protocol = "HTTP"
   target_type = "instance"
@@ -23,7 +23,7 @@ resource "aws_lb_target_group" "tf_tg_8080" {
 #############################
 
 resource "aws_alb" "tf_alb" {
-  name = "tf_alb"
+  name = "tf-alb"
   internal = false
   load_balancer_type = "application"
   security_groups = [aws_security_group.tf_alb_sg.id]
@@ -38,6 +38,7 @@ resource "aws_lb_listener" "listener_443" {
   load_balancer_arn = aws_alb.tf_alb.arn
   port = "443"
   protocol = "HTTPS"
+  certificate_arn = data.aws_acm_certificate.ssl.arn
 
   default_action {
     type = "forward"
@@ -56,11 +57,18 @@ resource "aws_lb_listener" "listener_81" {
   }
 }
 
-###############
-# CERTIFICATE #
-###############
+###########
+# ROUTE53 #
+###########
 
-resource "aws_lb_listener_certificate" "ssl_cert" {
-  listener_arn = aws_lb_listener.listener_443.arn
-  certificate_arn = data.aws_acm_certificate.ssl.arn
+resource "aws_route53_record" "record" {
+  zone_id = data.aws_route53_zone.route53.id
+  name = "final.lab-st-thinhnguyen.online"
+  type = "A"
+  
+  alias {
+    name = aws_alb.tf_alb.dns_name
+    zone_id = aws_alb.tf_alb.zone_id
+    evaluate_target_health = true
+  }
 }

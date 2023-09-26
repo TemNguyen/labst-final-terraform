@@ -16,7 +16,7 @@ resource "aws_network_interface" "tf_ecs_ec2_eni" {
 }
 
 resource "aws_instance" "tf_ecs_ec2" {
-  ami = var.ecs_ami
+  ami = data.aws_ami.ecs_instance.id
   instance_type = "t3.medium"
   key_name = data.aws_key_pair.ssh_keypair.key_name
   user_data = <<EOF
