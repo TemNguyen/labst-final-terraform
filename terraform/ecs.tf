@@ -140,6 +140,60 @@ resource "aws_ecs_task_definition" "tf_wordpress" {
   DEFINITION
 }
 
+resource "aws_ecs_task_definition" "tf_ghost" {
+  family = "tf-ghost"
+  requires_compatibilities = ["EC2"]
+
+  runtime_platform {
+   operating_system_family =  "LINUX"
+   cpu_architecture = "X86_64"
+  }
+
+  network_mode = "host"
+  cpu = 512
+  memory = 1024
+  task_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
+  execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
+
+  container_definitions = <<DEFINITION
+  [
+    {
+      "name": "ghost",
+      "image": "${var.ghost_image}",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 2368,
+          "hostPort": 2368
+        }
+      ],
+      "environment": [
+        {
+          "name": "database__client",
+          "value": "mysql"
+        },
+        {
+          "name": "database__connection__host",
+          "value": "${split(":", aws_db_instance.tf_rds.endpoint)[0]}"
+        },
+        {
+          "name": "database__connection__database",
+          "value": "${aws_db_instance.tf_rds.db_name}"
+        },
+        {
+          "name": "database__connection__user",
+          "value": "${aws_db_instance.tf_rds.username}"
+        },
+        {
+          "name": "database__connection__password",
+          "value": "${aws_db_instance.tf_rds.password}"
+        }
+      ]
+    }
+  ]
+  DEFINITION
+}
+
 ################
 # ECS SERVICES #
 ################
@@ -169,5 +223,19 @@ resource "aws_ecs_service" "wordpress" {
     target_group_arn = aws_lb_target_group.tf_tg_8080.arn
     container_name = "wordpress"
     container_port = 8080
+  }
+}
+
+resource "aws_ecs_service" "ghost" {
+  name = "ghost"
+  cluster = aws_ecs_cluster.tf_ecs_cluster.id
+  launch_type = "EC2"
+  task_definition = aws_ecs_task_definition.tf_ghost.arn
+  desired_count = 1
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.tf_tg_2368.arn
+    container_name = "ghost"
+    container_port = 2368
   }
 }

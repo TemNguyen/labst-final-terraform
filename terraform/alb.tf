@@ -18,6 +18,14 @@ resource "aws_lb_target_group" "tf_tg_8080" {
   vpc_id = aws_vpc.lab_st_thinhnguyen_tf_vpc.id
 }
 
+resource "aws_lb_target_group" "tf_tg_2368" {
+  name = "tf-tg-2368"
+  port = 2368
+  protocol = "HTTP"
+  target_type = "instance"
+  vpc_id = aws_vpc.lab_st_thinhnguyen_tf_vpc.id
+}
+
 #############################
 # APPLICATION LOAD BALANCER #
 #############################
@@ -46,9 +54,21 @@ resource "aws_lb_listener" "listener_443" {
   }
 }
 
-resource "aws_lb_listener" "listener_81" {
+resource "aws_lb_listener" "listener_4430" {
   load_balancer_arn = aws_alb.tf_alb.arn
-  port = "81"
+  port = "4430"
+  protocol = "HTTPS"
+  certificate_arn = data.aws_acm_certificate.ssl.arn
+
+  default_action {
+    type = "forward"
+    target_group_arn = aws_lb_target_group.tf_tg_2368.arn
+  }
+}
+
+resource "aws_lb_listener" "listener_80" {
+  load_balancer_arn = aws_alb.tf_alb.arn
+  port = "80"
   protocol = "HTTP"
 
   default_action {

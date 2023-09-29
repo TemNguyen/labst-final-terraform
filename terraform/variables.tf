@@ -40,3 +40,7 @@ variable "phpmyadmin_image" {
 variable "wordpress_image" {
   default = "public.ecr.aws/bitnami/wordpress:latest"
 }
+
+variable "ghost_image" {
+  default = "public.ecr.aws/docker/library/ghost:latest"
+}
